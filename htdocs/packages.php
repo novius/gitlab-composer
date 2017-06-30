@@ -65,8 +65,8 @@ $fetch_composer = function($project, $ref) use ($repos) {
 
         $composer = json_decode(base64_decode($c['content']), true);
 
-        if (empty($composer['name']) || strcasecmp($composer['name'], $project['path_with_namespace']) !== 0) {
-            return false; // packages must have a name and must match
+        if (empty($composer['name'])) {
+            return false; // packages must have a name
         }
 
         return $composer;
@@ -196,7 +196,8 @@ if (!file_exists($packages_file) || filemtime($packages_file) < $mtime) {
     $packages = array();
     foreach ($all_projects as $project) {
         if ($package = $load_data($project)) {
-            $packages[$project['path_with_namespace']] = $package;
+            $packagesInfos = (object) reset($package);
+            $packages[$packagesInfos->name] = $package;
         }
     }
     if ( file_exists( $static_file ) ) {
